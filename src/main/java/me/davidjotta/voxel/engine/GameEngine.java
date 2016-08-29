@@ -10,9 +10,9 @@ public class GameEngine implements Runnable {
 	private final IGameLogic gameLogic;
 	private final Timer timer;
 	
-	public GameEngine(String windowTitle, int width, int height, boolean vsSync, IGameLogic gameLogic) throws Exception {
+	public GameEngine(String windowTitle, int width, int height, boolean vSync, IGameLogic gameLogic) throws Exception {
 		gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
-		window = new Window(windowTitle, width, height, vsSync);
+		window = new Window(windowTitle, width, height, vSync);
 		this.gameLogic = gameLogic;
 		timer = new Timer();
 	}
@@ -33,13 +33,15 @@ public class GameEngine implements Runnable {
 			gameLoop();
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		} finally {
+			cleanup();
 		}
 	}
 	
 	protected void init() throws Exception {
 		window.init();
 		timer.init();
-		gameLogic.init();
+		gameLogic.init(window);
 	}
 	
 	protected void gameLoop() {
@@ -60,6 +62,10 @@ public class GameEngine implements Runnable {
 				sync();
 			}
 		}
+	}
+	
+	protected void cleanup() {
+		gameLogic.cleanup();
 	}
 	
 	private void sync() {
