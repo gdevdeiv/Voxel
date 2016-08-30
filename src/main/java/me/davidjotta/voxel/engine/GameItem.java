@@ -14,7 +14,7 @@ public class GameItem {
 	public GameItem(Mesh mesh, float pX, float pY, float pZ) {
 		this.mesh = mesh;
 		position = new Vector3f(pX, pY, pZ);
-		scale = new Vector3f(1, 1, 1);
+		scale = new Vector3f(0.3f, 0.3f, 0.3f);
 		rotation = new Vector3f(0, 0, 0);
 	}
 	

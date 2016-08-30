@@ -66,11 +66,6 @@ public class VoxelGame implements IGameLogic {
         } else if (window.isKeyPressed(GLFW_KEY_D)) {
             cameraInc.x = 1;
         }
-        if (window.isKeyPressed(GLFW_KEY_Z)) {
-            cameraInc.y = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_X)) {
-            cameraInc.y = 1;
-        }
 	}
 
 	@Override
