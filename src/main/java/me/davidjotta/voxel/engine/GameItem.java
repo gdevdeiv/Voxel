@@ -11,11 +11,18 @@ public class GameItem {
 	private final Vector3f scale;
 	private final Vector3f rotation;
 	
-	public GameItem(Mesh mesh) {
+	public GameItem(Mesh mesh, float pX, float pY, float pZ) {
 		this.mesh = mesh;
-		position = new Vector3f(0, 0, 0);
-		scale = new Vector3f(0.3f, 0.3f, 0.3f);
+		position = new Vector3f(pX, pY, pZ);
+		scale = new Vector3f(1, 1, 1);
 		rotation = new Vector3f(0, 0, 0);
+	}
+	
+	public GameItem(Mesh mesh, float pX, float pY, float pZ, float sX, float sY, float sZ, float rX, float rY, float rZ) {
+		this.mesh = mesh;
+		position = new Vector3f(pX, pY, pZ);
+		scale = new Vector3f(sX, sY, sZ);
+		rotation = new Vector3f(rX, rY, rZ);
 	}
 	
 	public Vector3f getPosition() {
@@ -53,6 +60,6 @@ public class GameItem {
 	}
 	
 	public void tick() {
-		
+		// TODO: Tick when TileEntity.
 	}
 }

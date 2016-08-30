@@ -16,7 +16,7 @@ import me.davidjotta.voxel.engine.graph.Transformation;
 
 public class Renderer {
 	
-	private static final float FOV = (float) Math.toRadians(60.0f);
+	private static final float FOV = (float) Math.toRadians(90.0f);
     private static final float Z_NEAR = 0.01f;
     private static final float Z_FAR = 1000.f;
     private final Transformation transformation;
@@ -61,7 +61,7 @@ public class Renderer {
             // Set model view matrix for this item
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItem, viewMatrix);
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
-            // Render the mes for this game item
+            // Render the mesh for this game item
             gameItem.getMesh().render();
         }
         shaderProgram.unbind();
