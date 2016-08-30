@@ -51,4 +51,8 @@ public class GameItem {
 	public Mesh getMesh() {
 		return mesh;
 	}
+	
+	public void tick() {
+		
+	}
 }

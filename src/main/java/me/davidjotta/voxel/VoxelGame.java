@@ -1,41 +1,43 @@
 package me.davidjotta.voxel;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_Z;
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import me.davidjotta.voxel.engine.GameEngine;
 import me.davidjotta.voxel.engine.GameItem;
 import me.davidjotta.voxel.engine.IGameLogic;
+import me.davidjotta.voxel.engine.MouseInput;
 import me.davidjotta.voxel.engine.Window;
+import me.davidjotta.voxel.engine.graph.Camera;
 import me.davidjotta.voxel.engine.graph.Mesh;
 import me.davidjotta.voxel.engine.graph.Texture;
 import me.davidjotta.voxel.game.Renderer;
 
 public class VoxelGame implements IGameLogic {
 	
-	private int displxInc = 0;
-    private int displyInc = 0;
-    private int displzInc = 0;
-    private int scaleInc = 0;
+	private static final float MOUSE_SENSITIVITY = 0.2f;
+	private final Vector3f cameraInc;
+	private final Camera camera;
+	private static final float CAMERA_POS_STEP = 0.5f;
 	private final Renderer renderer;
 	private GameItem[] gameItems;
 	
 	public VoxelGame() {
 		renderer = new Renderer();
+		camera = new Camera();
+		cameraInc = new Vector3f(0, 0, 0);
 	}
 
 	@Override
 	public void init(Window window) throws Exception {
 		renderer.init(window);
-		// Create the Mesh
         float[] positions = new float[] {
             // V0
             -0.5f, 0.5f, 0.5f,
@@ -53,83 +55,77 @@ public class VoxelGame implements IGameLogic {
             -0.5f, -0.5f, -0.5f,
             // V7
             0.5f, -0.5f, -0.5f,
-            
-            // For text coords in top face
-            // V8: V4 repeated
+            // Top
+            // V8: V4
             -0.5f, 0.5f, -0.5f,
-            // V9: V5 repeated
+            // V9: V5
             0.5f, 0.5f, -0.5f,
-            // V10: V0 repeated
+            // V10: V0
             -0.5f, 0.5f, 0.5f,
-            // V11: V3 repeated
+            // V11: V3
             0.5f, 0.5f, 0.5f,
-
-            // For text coords in right face
-            // V12: V3 repeated
+            // Right
+            // V12: V3
             0.5f, 0.5f, 0.5f,
-            // V13: V2 repeated
+            // V13: V2
             0.5f, -0.5f, 0.5f,
-
-            // For text coords in left face
-            // V14: V0 repeated
+            // Left
+            // V14: V0
             -0.5f, 0.5f, 0.5f,
-            // V15: V1 repeated
+            // V15: V1
             -0.5f, -0.5f, 0.5f,
-
-            // For text coords in bottom face
-            // V16: V6 repeated
+            // Bottom
+            // V16: V6
             -0.5f, -0.5f, -0.5f,
-            // V17: V7 repeated
+            // V17: V7
             0.5f, -0.5f, -0.5f,
-            // V18: V1 repeated
+            // V18: V1
             -0.5f, -0.5f, 0.5f,
-            // V19: V2 repeated
+            // V19: V2
             0.5f, -0.5f, 0.5f,
         };
-        float[] textCoords = new float[]{
+        float[] textCoords = new float[] {
+    		// Front
             0.0f, 0.0f,
             0.0f, 0.5f,
             0.5f, 0.5f,
             0.5f, 0.0f,
-            
+            // Back
             0.0f, 0.0f,
             0.5f, 0.0f,
             0.0f, 0.5f,
             0.5f, 0.5f,
-            
-            // For text coords in top face
+            // Top
             0.0f, 0.5f,
             0.5f, 0.5f,
             0.0f, 1.0f,
             0.5f, 1.0f,
-
-            // For text coords in right face
+            // Right
             0.0f, 0.0f,
             0.0f, 0.5f,
-
-            // For text coords in left face
+            // Left
             0.5f, 0.0f,
             0.5f, 0.5f,
-
-            // For text coords in bottom face
+            // Bottom
             0.5f, 0.0f,
             1.0f, 0.0f,
             0.5f, 0.5f,
             1.0f, 0.5f,
         };
-        int[] indices = new int[]{
-            // Front face
+        int[] indices = new int[] {
+            // Front
             0, 1, 3, 3, 1, 2,
-            // Top Face
+            // Top
             8, 10, 11, 9, 8, 11,
-            // Right face
+            // Right
             12, 13, 7, 5, 12, 7,
-            // Left face
+            // Left
             14, 15, 6, 4, 14, 6,
-            // Bottom face
+            // Bottom
             16, 18, 19, 17, 16, 19,
-            // Back face
-            4, 6, 7, 5, 4, 7,};
+            // Back
+            4, 6, 7, 5, 4, 7,
+        };
         Texture texture = new Texture("/textures/grassblock.png");
         Mesh mesh = new Mesh(positions, textCoords, indices, texture);
         GameItem gameItem = new GameItem(mesh);
@@ -138,68 +134,40 @@ public class VoxelGame implements IGameLogic {
 	}
 
 	@Override
-	public void input(Window window) {
-		displyInc = 0;
-        displxInc = 0;
-        displzInc = 0;
-        scaleInc = 0;
-        if (window.isKeyPressed(GLFW_KEY_UP)) {
-            displyInc = 1;
-        } else if (window.isKeyPressed(GLFW_KEY_DOWN)) {
-            displyInc = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_LEFT)) {
-            displxInc = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_RIGHT)) {
-            displxInc = 1;
-        } else if (window.isKeyPressed(GLFW_KEY_A)) {
-            displzInc = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_Q)) {
-            displzInc = 1;
-        } else if (window.isKeyPressed(GLFW_KEY_Z)) {
-            scaleInc = -1;
+	public void input(Window window, MouseInput mouseInput) {
+		cameraInc.set(0, 0, 0);
+        if (window.isKeyPressed(GLFW_KEY_W)) {
+            cameraInc.z = -1;
+        } else if (window.isKeyPressed(GLFW_KEY_S)) {
+            cameraInc.z = 1;
+        }
+        if (window.isKeyPressed(GLFW_KEY_A)) {
+            cameraInc.x = -1;
+        } else if (window.isKeyPressed(GLFW_KEY_D)) {
+            cameraInc.x = 1;
+        }
+        if (window.isKeyPressed(GLFW_KEY_Z)) {
+            cameraInc.y = -1;
         } else if (window.isKeyPressed(GLFW_KEY_X)) {
-            scaleInc = 1;
+            cameraInc.y = 1;
         }
 	}
 
 	@Override
-	public void update(float interval) {
+	public void update(float interval, MouseInput mouseInput) {
 		for (GameItem gameItem : gameItems) {
-            // Update position
-            Vector3f itemPos = gameItem.getPosition();
-            float posx = itemPos.x + displxInc * 0.01f;
-            float posy = itemPos.y + displyInc * 0.01f;
-            float posz = itemPos.z + displzInc * 0.01f;
-            gameItem.setPosition(posx, posy, posz);
-
-            // Update scale
-            Vector3f scale = gameItem.getScale();
-            scale.x += scaleInc * 0.05f;
-            scale.y += scaleInc * 0.05f;
-            scale.z += scaleInc * 0.05f;
-            if (scale.x < 0) {
-                scale.x = 0;
-            }
-            if (scale.y < 0) {
-                scale.y = 0;
-            }
-            if (scale.z < 0) {
-                scale.z = 0;
-            }
-            gameItem.setScale(scale.x, scale.y, scale.z);
-
-            // Update rotation angle
-            float rotation = gameItem.getRotation().x + 1.5f;
-            if (rotation > 360) {
-                rotation = 0;
-            }
-            gameItem.setRotation(rotation, rotation, rotation);
+            gameItem.tick();
+        }
+		camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
+		if (mouseInput.isRightButtonPressed()) {
+            Vector2f rotVec = mouseInput.getDisplVec();
+            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
         }
 	}
 
 	@Override
 	public void render(Window window) {
-		renderer.render(window, gameItems);
+		renderer.render(window, camera, gameItems);
 	}
 
 	@Override
