@@ -4,8 +4,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_Z;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -14,12 +12,18 @@ import me.davidjotta.voxel.engine.GameEngine;
 import me.davidjotta.voxel.engine.GameItem;
 import me.davidjotta.voxel.engine.IGameLogic;
 import me.davidjotta.voxel.engine.MouseInput;
+import me.davidjotta.voxel.engine.SceneLight;
 import me.davidjotta.voxel.engine.Window;
 import me.davidjotta.voxel.engine.graph.Camera;
+import me.davidjotta.voxel.engine.graph.DirectionalLight;
+import me.davidjotta.voxel.engine.graph.Material;
 import me.davidjotta.voxel.engine.graph.Mesh;
+import me.davidjotta.voxel.engine.graph.OBJLoader;
+import me.davidjotta.voxel.engine.graph.PointLight;
+import me.davidjotta.voxel.engine.graph.SpotLight;
 import me.davidjotta.voxel.engine.graph.Texture;
+import me.davidjotta.voxel.game.Hud;
 import me.davidjotta.voxel.game.Renderer;
-import me.davidjotta.voxel.game.block.BlockGrass;
 
 public class VoxelGame implements IGameLogic {
 	
@@ -29,28 +33,57 @@ public class VoxelGame implements IGameLogic {
 	private static final float CAMERA_POS_STEP = 0.5f;
 	private final Renderer renderer;
 	private GameItem[] gameItems;
+	private Hud hud;
+	private SceneLight sceneLight;
+	private float lightAngle;
+	private float spotAngle = 0;
+	private float spotInc = 1;
 	
 	public VoxelGame() {
 		renderer = new Renderer();
 		camera = new Camera();
 		cameraInc = new Vector3f(0, 0, 0);
+		lightAngle = -90;
 	}
 
 	@Override
 	public void init(Window window) throws Exception {
 		renderer.init(window);
-		Texture itemTexture = new Texture("/textures/grassblock.png");
-		Mesh itemMesh = new Mesh(
-			BlockGrass.getPositions(),
-			BlockGrass.getTextCoords(),
-			BlockGrass.getIndices(),
-			itemTexture
-		);
-		GameItem item = new BlockGrass(itemMesh, 0, 0, 2);
-        gameItems = new GameItem[] {item};
-        for (GameItem gameItem : gameItems) {
-        	System.out.println(gameItem.getPosition().x);
-        }
+		
+		Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
+        Texture texture = new Texture("/textures/grassblock.png");
+        Material material = new Material(texture, 1f);
+        mesh.setMaterial(material);
+        GameItem gameItem = new GameItem(mesh, 0, 0, 0);
+        gameItems = new GameItem[]{gameItem};
+        
+        sceneLight = new SceneLight();
+
+        // Ambient Light
+        sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
+
+        // Point Light
+        Vector3f lightPosition = new Vector3f(0, 0, 1);
+        float lightIntensity = 1.0f;
+        PointLight pointLight = new PointLight(new Vector3f(1, 1, 1), lightPosition, lightIntensity);
+        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+        pointLight.setAttenuation(att);
+        sceneLight.setPointLightList(new PointLight[]{pointLight});
+
+        // Spot Light
+        lightPosition = new Vector3f(0, 0.0f, 10f);
+        pointLight = new PointLight(new Vector3f(1, 1, 1), lightPosition, lightIntensity);
+        att = new PointLight.Attenuation(0.0f, 0.0f, 0.02f);
+        pointLight.setAttenuation(att);
+        Vector3f coneDir = new Vector3f(0, 0, -1);
+        float cutoff = (float) Math.cos(Math.toRadians(140));
+        SpotLight spotLight = new SpotLight(pointLight, coneDir, cutoff);
+        sceneLight.setSpotLightList(new SpotLight[]{spotLight, new SpotLight(spotLight)});
+
+        lightPosition = new Vector3f(-1, 0, 0);
+        sceneLight.setDirectionalLight(new DirectionalLight(new Vector3f(1, 1, 1), lightPosition, lightIntensity));
+        
+        hud = new Hud("[X:" + camera.getPosition().x + ",Y:" + camera.getPosition().y + ",Z:" + camera.getPosition().z + "]");
 	}
 
 	@Override
@@ -74,15 +107,15 @@ public class VoxelGame implements IGameLogic {
             gameItem.tick();
         }
 		camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
-		if (mouseInput.isRightButtonPressed()) {
-            Vector2f rotVec = mouseInput.getDisplVec();
-            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
-        }
+        Vector2f rotVec = mouseInput.getDisplVec();
+        camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+        hud.setStatusText("[X:" + camera.getPosition().x + ",Y:" + camera.getPosition().y + ",Z:" + camera.getPosition().z + "]");
 	}
 
 	@Override
 	public void render(Window window) {
-		renderer.render(window, camera, gameItems);
+		hud.updateSize(window);
+		renderer.render(window, camera, gameItems, sceneLight, hud);
 	}
 
 	@Override
@@ -91,6 +124,7 @@ public class VoxelGame implements IGameLogic {
         for (GameItem gameItem : gameItems) {
             gameItem.getMesh().cleanUp();
         }
+        hud.cleanup();
 	}
 	
 	public static void main(String[] args) {
