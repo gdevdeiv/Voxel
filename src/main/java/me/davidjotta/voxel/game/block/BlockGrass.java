@@ -1,9 +1,8 @@
 package me.davidjotta.voxel.game.block;
 
-import me.davidjotta.voxel.engine.GameItem;
 import me.davidjotta.voxel.engine.graph.Mesh;
 
-public class BlockGrass extends GameItem {
+public class BlockGrass extends Block {
 
 	private static final float[] positions = new float[] {
         // V0
@@ -108,7 +107,19 @@ public class BlockGrass extends GameItem {
 		return indices;
 	}
 	
+	public BlockGrass(float pX, float pY, float pZ) {
+		this(pX, pY, pZ, 1, 1, 1);
+	}
+	
 	public BlockGrass(Mesh mesh, float pX, float pY, float pZ) {
-		super(mesh, pX, pY, pZ);
+		this(mesh, pX, pY, pZ, 1, 1, 1);
+	}
+	
+	public BlockGrass(float pX, float pY, float pZ, float sX, float sY, float sZ) {
+		super(pX, pY, pZ, sX, sY, sZ);
+	}
+	
+	public BlockGrass(Mesh mesh, float pX, float pY, float pZ, float sX, float sY, float sZ) {
+		super(mesh, pX, pY, pZ, sX, sY, sZ);
 	}
 }

@@ -52,9 +52,6 @@ public class Window {
 	private int width;
 	private int height;
 	private long windowHandle;
-	private GLFWErrorCallback errorCallback;
-	private GLFWKeyCallback keyCallback;
-	private GLFWWindowSizeCallback windowSizeCallback;
 	private boolean resized;
 	private boolean vSync;
 	
@@ -67,7 +64,7 @@ public class Window {
 	}
 	
 	public void init() {
-		glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
+		glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
 		if (!glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
@@ -82,7 +79,7 @@ public class Window {
 		if (windowHandle == NULL) {
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
-		glfwSetWindowSizeCallback(windowHandle, windowSizeCallback = new GLFWWindowSizeCallback() {
+		glfwSetWindowSizeCallback(windowHandle, new GLFWWindowSizeCallback() {
             @Override
             public void invoke(long window, int width, int height) {
                 Window.this.width = width;
@@ -90,7 +87,7 @@ public class Window {
                 Window.this.setResized(true);
             }
 		});
-		glfwSetKeyCallback(windowHandle, keyCallback = new GLFWKeyCallback() {
+		glfwSetKeyCallback(windowHandle, new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {

@@ -1,62 +1,62 @@
-package me.davidjotta.voxel.engine;
+package me.davidjotta.voxel.game.block;
 
 import org.joml.Vector3f;
 
 import me.davidjotta.voxel.engine.graph.Mesh;
 
-public class GameItem {
+public class Block {
 
 	private Mesh mesh;
 	private final Vector3f position;
 	private final Vector3f scale;
 	private final Vector3f rotation;
 	
-	public GameItem() {
+	public Block() {
 		position = new Vector3f(0, 0, 0);
 		scale = new Vector3f(1, 1, 1);
 		rotation = new Vector3f(0, 0, 0);
 	}
 	
-	public GameItem(Mesh mesh) {
+	public Block(Mesh mesh) {
 		this.mesh = mesh;
 		position = new Vector3f(0, 0, 0);
 		scale = new Vector3f(1, 1, 1);
 		rotation = new Vector3f(0, 0, 0);
 	}
 	
-	public GameItem(float pX, float pY, float pZ) {
+	public Block(float pX, float pY, float pZ) {
 		position = new Vector3f(pX, pY, pZ);
 		scale = new Vector3f(1, 1, 1);
 		rotation = new Vector3f(0, 0, 0);
 	}
 	
-	public GameItem(Mesh mesh, float pX, float pY, float pZ) {
+	public Block(Mesh mesh, float pX, float pY, float pZ) {
 		this.mesh = mesh;
 		position = new Vector3f(pX, pY, pZ);
 		scale = new Vector3f(1, 1, 1);
 		rotation = new Vector3f(0, 0, 0);
 	}
 	
-	public GameItem(float pX, float pY, float pZ, float sX, float sY, float sZ) {
+	public Block(float pX, float pY, float pZ, float sX, float sY, float sZ) {
 		position = new Vector3f(pX, pY, pZ);
 		scale = new Vector3f(sX, sY, sZ);
 		rotation = new Vector3f(0, 0, 0);
 	}
 	
-	public GameItem(Mesh mesh, float pX, float pY, float pZ, float sX, float sY, float sZ) {
+	public Block(Mesh mesh, float pX, float pY, float pZ, float sX, float sY, float sZ) {
 		this.mesh = mesh;
 		position = new Vector3f(pX, pY, pZ);
 		scale = new Vector3f(sX, sY, sZ);
 		rotation = new Vector3f(0, 0, 0);
 	}
 	
-	public GameItem(float pX, float pY, float pZ, float sX, float sY, float sZ, float rX, float rY, float rZ) {
+	public Block(float pX, float pY, float pZ, float sX, float sY, float sZ, float rX, float rY, float rZ) {
 		position = new Vector3f(pX, pY, pZ);
 		scale = new Vector3f(sX, sY, sZ);
 		rotation = new Vector3f(rX, rY, rZ);
 	}
 	
-	public GameItem(Mesh mesh, float pX, float pY, float pZ, float sX, float sY, float sZ, float rX, float rY, float rZ) {
+	public Block(Mesh mesh, float pX, float pY, float pZ, float sX, float sY, float sZ, float rX, float rY, float rZ) {
 		this.mesh = mesh;
 		position = new Vector3f(pX, pY, pZ);
 		scale = new Vector3f(sX, sY, sZ);
@@ -99,9 +99,5 @@ public class GameItem {
 	
 	public void setMesh(Mesh mesh) {
 		this.mesh = mesh;
-	}
-	
-	public void tick() {
-		// TODO: Tick when TileEntity.
 	}
 }

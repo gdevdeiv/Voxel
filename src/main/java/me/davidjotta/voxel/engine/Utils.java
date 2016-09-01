@@ -10,10 +10,12 @@ import java.util.Scanner;
 public class Utils {
 
 	public static String loadResource(String fileName) throws Exception {
-		String result = "";
-		try (InputStream in = Utils.class.getClass().getResourceAsStream(fileName)) {
-			result = new Scanner(in, "UTF-8").useDelimiter("\\A").next();
-		}
+		InputStream in = Utils.class.getClass().getResourceAsStream(fileName);
+		Scanner scanner = new Scanner(in, "UTF-8");
+		scanner.useDelimiter("\\A");
+		String result = scanner.next();
+		scanner.close();
+		in.close();
 		return result;
 	}
 	

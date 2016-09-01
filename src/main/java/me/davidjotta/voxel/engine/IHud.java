@@ -1,13 +1,16 @@
 package me.davidjotta.voxel.engine;
 
+import java.util.List;
+
+import me.davidjotta.voxel.game.block.Block;
+
 public interface IHud {
 
-	GameItem[] getGameItems();
+	List<Block> getGameItems();
 	
 	default void cleanup() {
-		GameItem[] gameItems = getGameItems();
-		for (GameItem gameItem : gameItems) {
-			gameItem.getMesh().cleanUp();
+		for (Block block : getGameItems()) {
+			block.getMesh().cleanUp();
 		}
 	}
 }

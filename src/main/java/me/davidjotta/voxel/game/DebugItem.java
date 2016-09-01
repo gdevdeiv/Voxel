@@ -3,13 +3,13 @@ package me.davidjotta.voxel.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.davidjotta.voxel.engine.GameItem;
 import me.davidjotta.voxel.engine.Utils;
 import me.davidjotta.voxel.engine.graph.FontTexture;
 import me.davidjotta.voxel.engine.graph.Material;
 import me.davidjotta.voxel.engine.graph.Mesh;
+import me.davidjotta.voxel.game.block.Block;
 
-public class DebugItem extends GameItem {
+public class DebugItem extends Block {
 
 	private static final float ZPOS = 0.0f;
 	private static final int VERTICES_PER_QUAD = 4;
@@ -24,10 +24,10 @@ public class DebugItem extends GameItem {
 	}
 	
 	private Mesh buildMesh() {
-        List<Float> positions = new ArrayList();
-        List<Float> textCoords = new ArrayList();
+        List<Float> positions = new ArrayList<Float>();
+        List<Float> textCoords = new ArrayList<Float>();
         float[] normals   = new float[0];
-        List<Integer> indices   = new ArrayList();
+        List<Integer> indices   = new ArrayList<Integer>();
         char[] characters = text.toCharArray();
         int numChars = characters.length;
 

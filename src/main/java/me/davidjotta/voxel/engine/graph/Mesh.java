@@ -38,7 +38,7 @@ public class Mesh {
 
     public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
         vertexCount = indices.length;
-        vboIdList = new ArrayList();
+        vboIdList = new ArrayList<Integer>();
 
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
